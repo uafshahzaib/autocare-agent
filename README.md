@@ -8,9 +8,11 @@ Built with **LangChain** (multi-agent orchestration, tool use, RAG), **PyTorch**
 
 Ask a bare LLM "is my service due at 42,000 km?" or "what does a flashing engine light mean?" and it will answer fluently — and sometimes wrong, because nothing forces it to check a real source or do real arithmetic. In a safety-relevant domain like vehicle maintenance, a wrong answer ("that flashing light is probably fine") is a real-world harm, not just an inconvenience. This is a documented, general failure mode of LLMs (Ji et al., 2023, "Survey of Hallucination in Natural Language Generation"). The fix used here, and increasingly standard in industry, is to stop asking the model to *recall* facts and instead make it *retrieve* facts (RAG) and *delegate* calculations/lookups to deterministic tools (ReAct-style agent) — so every factual or numeric claim in the final answer is traceable to a document chunk or a function's return value, not to the model's parameters.
 
-## Why this project (for the BMW Agentic AI Engineer role)
+## Why this design
 
-It mirrors a realistic industrial use case: a customer-facing assistant that must (1) answer questions grounded in internal documentation instead of hallucinating, (2) understand a photo as well as text, (3) perform deterministic calculations and turn them into a prioritized recommendation, and (4) do all of that through specialist agents coordinated by a supervisor — rather than one prompt trying to do everything. It deliberately demonstrates depth in two of the job posting's methodological areas (Generative AI/NLP via RAG + agents, and Computer Vision via the trained CNN), plus the platform/architecture thinking ("design and develop end-to-end, scalable AI systems") the role asks for.
+It mirrors a realistic industrial use case: a customer-facing assistant that must (1) answer questions grounded in internal documentation instead of hallucinating, (2) understand a photo as well as text, (3) perform deterministic calculations and turn them into a prioritized recommendation, and (4) do all of that through specialist agents coordinated by a supervisor rather than one prompt trying to do everything.
+
+Each of those is a separate failure mode, which is why they get separate components. Retrieval fixes fabricated facts. Tool-calling fixes fabricated arithmetic. The image classifier covers the case where the user cannot describe what they are looking at. The supervisor exists because a single agent holding all four responsibilities becomes impossible to debug once an answer is wrong and you need to know which step produced it.
 
 ## Architecture
 
